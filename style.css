@@ -1,0 +1,31 @@
+body{
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background: url("img/bg.jpg");
+}
+
+h1{
+    font-size: 3.052em;
+    font-weight: 800;
+    font-variant: small-caps;
+    letter-spacing: 0.1em;
+}
+
+.container{
+    width: 40%;
+    margin: auto;
+}
+
+p{
+    margin-top: 40px;
+}
+
+input[type=submit] {
+    cursor: pointer;
+    text-align: center;
+}
+
+input::placeholder{
+    text-align: center;
+}
