@@ -1,31 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Francois+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap');
+
 body{
+    font-family: 'Francois One', 'Didact Gothic', sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
-    background: url("img/bg.jpg");
+    background: url("bg.jpg");
 }
 
 h1{
+    font-family: 'Francois One', sans-serif;
     font-size: 3.052em;
     font-weight: 800;
     font-variant: small-caps;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
+    color: #b2692d;
+    text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
+    
 }
 
 .container{
-    width: 40%;
-    margin: auto;
+    margin-top: -25px;
+    display: flex;
+    flex-direction: column;
 }
 
-p{
-    margin-top: 40px;
+div:nth-child(1){
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+
+input[type=text]{
+    height: 30px;
+    text-align: center;
+    border: 1px #d5a997 solid;
+}
+
+input[type=number]{
+    height: 30px;
+    text-align: center;
+    border: 1px #d5a997 solid;
 }
 
 input[type=submit] {
     cursor: pointer;
     text-align: center;
+    margin-left: 8px;
+    background-color: #6b3b0e;
+    border: 1px #d5a997 solid;
+    color: #fff;
+    padding: 3px;
 }
 
 input::placeholder{
     text-align: center;
+    font-family: 'Didact Gothic', sans-serif;
+    font-size: 1em;
 }

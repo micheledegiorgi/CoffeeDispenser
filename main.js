@@ -1,31 +1,7 @@
-function EventAddCapsule(){
-    try{
-        var Capsules = CapsulesNumber.value;
-        if(isNaN(Capsules)){
-            alert("Only numeric values are allowed!");
-            CapsulesNumber.value = "";
-            return;
-        }
-        if(Capsules < 0){
-            alert("Only positive numbers are allowed!");
-            CapsulesNumber.value = "";
-            return;
-        }
-        Capsules++;
-        CapsulesNumber.value = Capsules;
-    } catch (e){
-        alert("EventAddCapsule " + e);
-    }
-}
-
 function EventSetCapsules(){
     try{
         if(CapsulesNumber.value == ""){
-            alert("One or more fields are empty.");
-            return;
-        }
-        if(isNaN(CapsulesNumber.value)){
-            alert("Only numeric values are allowed!");
+            alert("The field is empty or you insert a non-numeric value.");
             CapsulesNumber.value = "";
             return;
         }
@@ -33,191 +9,193 @@ function EventSetCapsules(){
             alert("Only positive numbers are allowed!");
             CapsulesNumber.value = "";
             return;
-        }
-        var Capsules = CapsulesNumber.value;
-        Capsules = Number(Capsules);    
-        StateCapsules += Capsules;  
-        alert("We got it! " + StateCapsules + " capsules remaining.");  
+        }    
+        TotalCapsules += Number(CapsulesNumber.value);  
+        CapsulesAvailable.value = TotalCapsules;
         CapsulesNumber.value = "";
     } catch (e){
         alert("EventSetCapsules " + e);
     }
 }
-
-function EventErogation(){
+ 
+function EventReset(){
     try{
-        if(StateCapsules > 0){
-            if(CoffeeNumber.value == ""){
-                alert("One or more fields are empty.");
-                return;
+        TotalCapsules = Number(0);
+        CapsulesAvailable.value = TotalCapsules;
+    } catch (e){
+        alert("EventReset " + e);
+    }
+}
+
+function EventSetCode(){
+    try{
+        var Code = UserCode.value;
+        if(UserCode.value == ""){
+            alert("The User Code field is empty.");
+            return;
+        }
+        if(Code.length != 4){
+            alert("The User Code should be 4 characters long."); 
+            UserCode.value = "";
+            return;
+        }
+        
+        if(Hidden){
+            CoffeeDispenser();
+        }
+
+        var E = false;
+        for(var I = 0; I < ID.length; I++){
+            if(UserCode.value == ID[I]){
+                E = true;
+                CoffeeToPay.value = UserCoffee[I] + " coffee to pay.";
             }
-            if(isNaN(CoffeeNumber.value)){
-                alert("Only numeric values are allowed in the Coffee Number field!");
-                CoffeeNumber.value = "";
-                UserCode.value = "";
-                return;
-            }
-            if(CoffeeNumber.value <= 0){
-                alert("Only positive numbers > of 0 are allowed!");
-                CoffeeNumber.value = "";
-                UserCode.value = "";
-                return;
-            }
-            if(CoffeeNumber.value > StateCapsules){
-                alert("Only " + StateCapsules + " capsules are available.");
-                CoffeeNumber.value = "";
-                return;
-            }
-            var Code = UserCode.value;
-            if(Code.length != 4){
-                alert("The User Code should be 4 characters long."); 
-                UserCode.value = "";
-                return;
-            }
+        }
+
+        if(!E){
+            ID.push(UserCode.value);
+            UserCoffee.push(Number(0));
+            alert("User code " + UserCode.value + " added to the system!");
+            CoffeeToPay.value = "";
+        }
             
-            var N = Number(CoffeeNumber.value);
-            if(L < 1){
-                Users.push({UserID: Code, UserCoffee: 0});
-                alert("User " + Users[0].UserID + " added!");
-                L = 1;
+    } catch (e){
+        alert("EventSetCode " + e);
+    }
+}
+
+function CoffeeDispenser(){
+    try{
+        var p1 = document.createElement("p");
+        var p2 = document.createElement("p");
+
+        var CoffeeNumber = document.createElement("input");
+        CoffeeNumber.setAttribute("type", "number");
+        CoffeeNumber.setAttribute("id", "CoffeeNumber");
+        CoffeeNumber.setAttribute("placeholder", "Number of Coffee");
+
+        CoffeeToPay = document.createElement("input");
+        CoffeeToPay.setAttribute("type", "text");
+        CoffeeToPay.setAttribute("id", "CoffeeToPay");
+        CoffeeToPay.setAttribute("placeholder", "Coffee to Pay");
+        CoffeeToPay.setAttribute("readonly", "readonly");
+
+        var Erogation = document.createElement("input");
+        Erogation.setAttribute("type", "submit");
+        Erogation.setAttribute("value", "Erogation");
+        Erogation.setAttribute("id", "Erogation");
+        p1.appendChild(Erogation);
+        p1.insertBefore(CoffeeNumber, Erogation);
+        p2.appendChild(CoffeeToPay);
+        CoffeeDiv.appendChild(p2);
+        CoffeeDiv.insertBefore(p1, p2);
+
+        Erogation.onclick = EventSetErogation;
+
+        // Enter Key Press activation
+        CoffeeNumber.addEventListener('keyup', function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                EventSetErogation();
             }
-            
-            var E = false;
-            var J;
-            if(!E){
-                for(var I = 0; I < Users.length; I++){
-                    if(UserCode.value == Users[I].UserID){
-                        E = true;
-                        J = I;
-                    }      
+        });
+
+        Hidden = false;
+    } catch(e){
+        alert("CoffeeDispenser " + e);
+    }
+}
+
+function EventSetErogation(){
+    try{
+        if(CoffeeNumber.value == ""){
+            alert("The field is empty or you insert a non-numeric value.");
+            CoffeeNumber.value = "";
+            return;
+        }
+        if(CoffeeNumber.value <= 0){
+            alert("Only positive values are allowed!");
+            CoffeeNumber.value = "";
+            return;
+        }
+        if(TotalCapsules > 0){
+            if(CoffeeNumber.value > TotalCapsules){
+                if(TotalCapsules == 1)
+                    alert("There is only 1 capsule left.");
+                else
+                    alert("There are only " + TotalCapsules + " capsules available.");
+                CoffeeNumber.value = "";
+                return;
+            }
+            for(var I = 0; I < ID.length; I++){
+                if(ID[I] == UserCode.value){
+                    UserCoffee[I] += Number(CoffeeNumber.value);
+                    alert("Erogation of " + CoffeeNumber.value + " coffee...!");
+                    CoffeeToPay.value = UserCoffee[I] + " coffee to pay.";
+                    TotalCapsules -= CoffeeNumber.value;
+                    CapsulesAvailable.value = TotalCapsules;
+                    CoffeeNumber.value = "";
                 }
             }
-
-            if(E){
-                Users[J].UserCoffee += N;
-                TotalCoffee += N;
-                if(CoffeeNumber.value > 1)
-                    alert("Erogation of " + CoffeeNumber.value + " coffee...! Aren't they a bit too much?")
-                else
-                    alert("Erogation of 1 coffee...!");
-            } else {
-                Code = UserCode.value;
-                N = Number(CoffeeNumber.value);
-                Users.push({UserID: Code, UserCoffee: N});
-                alert("User " + Users[Users.length-1].UserID + " added!");
-                if(Users[I].UserCoffee > 1)
-                    alert("Erogation of " + CoffeeNumber.value + " coffee...! Aren't they a bit too much?")
-                else
-                    alert("Erogation of 1 coffee...!");
-                StateCapsules -= N;
-                if(StateCapsules == 0)
-                    alert("No more capsules are left. Add more!")
-                else
-                    alert("Only " + StateCapsules + " capsules remaining.");
-                CoffeeNumber.value = "";
-                UserCode.value = "";
-                return;
-            }
-
-            StateCapsules -= N;
-            if(StateCapsules == 0)
-                alert("No more capsules are left. Add more!")
-            else
-                alert("Only " + StateCapsules + " capsules remaining.");
-            CoffeeNumber.value = "";
-            UserCode.value = "";
         } else {
-            alert("Sorry! No more capsules are left.")
-            UserCode.value = "";
-            CoffeeNumber.value = "";
+            alert("Sorry, no more capsules are left! Please, add more.")
         }
-    
-    } catch (e){
-        alert("EventErogation " + e);
+        
+    } catch (e) {
+        alert("EventSetErogation " + e);
     }
 }
 
-function EventCheckToPay(){
-    try{
-        if(UserCodeCheck.value == ""){
-            alert("One or more fields are empty.");
-            return;
-        }
-        var Code = UserCodeCheck.value
-            if(Code.length != 4){
-                alert("The User Code should be 4 characters long."); 
-                UserCode.value = "";
-                return;
-            }
-        if(L == 0){
-            alert("No user in memory.")
-            UserCodeCheck.value = "";
-            return;
-        }
-        var E = false;
-        if(!E){
-            for(var I = 0; I < Users.length; I++){
-                if(UserCodeCheck.value == Users[I].UserID){
-                    E = true;
-                }      
-            }
-        }
-
-        if(E){
-            for(var I = 0; I < Users.length; I++){
-                if(UserCodeCheck.value == Users[I].UserID)
-                    CoffeeToPay.value = Users[I].UserCoffee + " coffee to pay...";
-            }
-        } else {
-            alert("The user " + UserCodeCheck.value + " was not found.");
-            CoffeeToPay.value = "";
-            UserCodeCheck.value = "";
-        }
-    } catch (e){
-        alert("EventErogation " + e);
-    }
-}
 
 // Variables
+var CapsulesAvailable;
 var CapsulesNumber;
-var AddCapsule;
 var SetCapsules;
-var CoffeeNumber;
+var Reset;
 var UserCode;
-var Erogation;
-var UserCodeCheck; 
-var CheckToPay;
+var SetCode;
+var ID = new Array();
+var UserCoffee = new Array();
+var CoffeeDiv; 
 var CoffeeToPay;
-var L = 0;
-var Users = new Array(L);
 
 // State Variables
-var StateCapsules = 0;
-var TotalCoffee = 0;
-
+var TotalCapsules = 0;
+var Hidden = true;
 
 function LoadManager(){
     try{
+        CapsulesAvailable = document.getElementById("CapsulesAvailable");
         CapsulesNumber = document.getElementById("CapsulesNumber");
-        AddCapsule = document.getElementById("AddCapsule");
         SetCapsules = document.getElementById("SetCapsules");
-        CoffeeNumber = document.getElementById("CoffeeNumber");
+        Reset = document.getElementById("Reset");
         UserCode = document.getElementById("UserCode");
-        Erogation = document.getElementById("Erogation");
-        UserCodeCheck = document.getElementById("UserCodeCheck");
-        CheckToPay = document.getElementById("CheckToPay");
-        CoffeeToPay = document.getElementById("CoffeeToPay");
+        SetCode = document.getElementById("SetCode");
+        CoffeeDiv = document.getElementById("CoffeeDiv");
 
+        CapsulesAvailable.value = "";
         CapsulesNumber.value = "";
-        CoffeeNumber.value = "";
         UserCode.value = "";
-        UserCodeCheck.value = "";
-        CoffeeToPay.value = "";
 
-        AddCapsule.onclick = EventAddCapsule;
-        SetCapsules.onclick = EventSetCapsules;
-        Erogation.onclick = EventErogation;
-        CheckToPay.onclick = EventCheckToPay;
+        SetCapsules.addEventListener('click', EventSetCapsules);
+        Reset.addEventListener('click', EventReset);
+        SetCode.addEventListener('click', EventSetCode);
+
+        // Enter Key Press activation
+        CapsulesNumber.addEventListener('keyup', function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            EventSetCapsules();
+        }
+        });
+
+        UserCode.addEventListener('keyup', function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                EventSetCode();
+            }
+        });
+     
     } catch (e){
         alert("LoadManager " + e);
     }
